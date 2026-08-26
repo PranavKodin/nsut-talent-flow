@@ -1,3 +1,7 @@
+import { useEffect, useState } from "react";
+import { collection, onSnapshot } from "firebase/firestore";
+import { getFirebase } from "./firebase";
+
 export type Society = {
   slug: string;
   name: string;
@@ -7,6 +11,8 @@ export type Society = {
   about: string;
   roles: string[];
   accent: string; // css color
+  hiringOpen?: boolean;
+  removed?: boolean;
 };
 
 export const SOCIETIES: Society[] = [
@@ -76,4 +82,53 @@ export const SOCIETIES: Society[] = [
 
 export function societyBySlug(slug: string) {
   return SOCIETIES.find((s) => s.slug === slug);
+}
+
+/**
+ * Live society list: built-in defaults merged with whatever admins have
+ * created / edited / removed in the `societies` Firestore collection.
+ */
+export function useSocieties() {
+  const [overrides, setOverrides] = useState<Record<string, Partial<Society>> | null>(null);
+
+  useEffect(() => {
+    let unsub: (() => void) | undefined;
+    void getFirebase().then(({ db }) => {
+      unsub = onSnapshot(
+        collection(db, "societies"),
+        (snap) => {
+          const next: Record<string, Partial<Society>> = {};
+          snap.forEach((d) => {
+            next[d.id] = { slug: d.id, ...(d.data() as Partial<Society>) };
+          });
+          setOverrides(next);
+        },
+        () => setOverrides({}),
+      );
+    });
+    return () => unsub?.();
+  }, []);
+
+  const map = new Map<string, Society>();
+  for (const s of SOCIETIES) map.set(s.slug, { ...s });
+  for (const [slug, patch] of Object.entries(overrides ?? {})) {
+    const base = map.get(slug);
+    if (base) map.set(slug, { ...base, ...patch, slug });
+    else
+      map.set(slug, {
+        slug,
+        name: patch.name ?? slug,
+        short: patch.short ?? slug.slice(0, 2).toUpperCase(),
+        category: patch.category ?? "Other",
+        tagline: patch.tagline ?? "",
+        about: patch.about ?? "",
+        roles: patch.roles ?? ["Member"],
+        accent: patch.accent ?? "oklch(0.72 0.17 300)",
+        hiringOpen: patch.hiringOpen ?? false,
+        removed: patch.removed ?? false,
+      });
+  }
+
+  const societies = Array.from(map.values()).filter((s) => !s.removed);
+  return { societies, loading: overrides === null };
 }
