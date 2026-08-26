@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as SocietiesIndexRouteImport } from './routes/societies.index'
 import { Route as SocietiesSlugRouteImport } from './routes/societies.$slug'
 
@@ -22,6 +23,11 @@ const IndexRoute = IndexRouteImport.update({
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SocietiesIndexRoute = SocietiesIndexRouteImport.update({
@@ -38,12 +44,14 @@ const SocietiesSlugRoute = SocietiesSlugRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/dashboard': typeof DashboardRoute
   '/societies/$slug': typeof SocietiesSlugRoute
   '/societies/': typeof SocietiesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/dashboard': typeof DashboardRoute
   '/societies/$slug': typeof SocietiesSlugRoute
   '/societies': typeof SocietiesIndexRoute
 }
@@ -51,20 +59,28 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/dashboard': typeof DashboardRoute
   '/societies/$slug': typeof SocietiesSlugRoute
   '/societies/': typeof SocietiesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/societies/$slug' | '/societies/'
+  fullPaths: '/' | '/auth' | '/dashboard' | '/societies/$slug' | '/societies/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/societies/$slug' | '/societies'
-  id: '__root__' | '/' | '/auth' | '/societies/$slug' | '/societies/'
+  to: '/' | '/auth' | '/dashboard' | '/societies/$slug' | '/societies'
+  id:
+    | '__root__'
+    | '/'
+    | '/auth'
+    | '/dashboard'
+    | '/societies/$slug'
+    | '/societies/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthRoute: typeof AuthRoute
+  DashboardRoute: typeof DashboardRoute
   SocietiesSlugRoute: typeof SocietiesSlugRoute
   SocietiesIndexRoute: typeof SocietiesIndexRoute
 }
@@ -83,6 +99,13 @@ declare module '@tanstack/react-router' {
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/societies/': {
@@ -105,6 +128,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRoute: AuthRoute,
+  DashboardRoute: DashboardRoute,
   SocietiesSlugRoute: SocietiesSlugRoute,
   SocietiesIndexRoute: SocietiesIndexRoute,
 }
