@@ -37,7 +37,7 @@ function AuthPage() {
     setBusy(true);
     try {
       if (mode === "signin") await signInWithEmail(email, password);
-      else await signUpWithEmail(name || email.split("@")[0] ?? email, email, password);
+      else await signUpWithEmail(name || email.split("@")[0] || email, email, password);
       toast.success("Welcome to NSUT Societies");
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Authentication failed");
