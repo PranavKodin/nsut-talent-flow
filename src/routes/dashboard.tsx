@@ -126,7 +126,7 @@ function HiringToggle({ slug, name }: { slug: string; name: string }) {
     void getFirebase().then(({ db }) => {
       unsub = onSnapshot(
         doc(db, "societies", slug),
-        (s) => setOpen(Boolean(s.data()?.hiringOpen)),
+        (s) => setOpen(Boolean(s.data()?.['hiringOpen'])),
         () => undefined,
       );
     });

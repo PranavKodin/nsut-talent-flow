@@ -83,10 +83,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               data
                 ? {
                     uid: u.uid,
-                    email: (data.email as string) ?? u.email ?? "",
-                    name: (data.name as string) ?? "",
-                    role: (data.role as Role) ?? "member",
-                    society: (data.society as string | null) ?? null,
+                    email: (data['email'] as string) ?? u.email ?? "",
+                    name: (data['name'] as string) ?? "",
+                    role: (data['role'] as Role) ?? "member",
+                    society: (data['society'] as string | null) ?? null,
                   }
                 : null,
             );

@@ -37,7 +37,7 @@ function SocietiesPage() {
         (snap) => {
           const next: Record<string, boolean> = {};
           snap.forEach((d) => {
-            next[d.id] = Boolean(d.data().hiringOpen);
+            next[d.id] = Boolean(d.data()['hiringOpen']);
           });
           setOpen(next);
         },

@@ -50,7 +50,7 @@ function SocietyPage() {
     void getFirebase().then(({ db }) => {
       unsub = onSnapshot(
         doc(db, "societies", society.slug),
-        (snap) => setHiringOpen(Boolean(snap.data()?.hiringOpen)),
+        (snap) => setHiringOpen(Boolean(snap.data()?.['hiringOpen'])),
         () => undefined,
       );
     });
