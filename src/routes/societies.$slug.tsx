@@ -11,20 +11,15 @@ import {
 } from "firebase/firestore";
 import { toast } from "sonner";
 import { SiteHeader } from "@/components/SiteHeader";
-import { societyBySlug } from "@/lib/societies";
+import { DEFAULT_FORM_FIELDS, useSocieties, type FormField } from "@/lib/societies";
 import { getFirebase } from "@/lib/firebase";
 import { useAuth } from "@/lib/auth-context";
 
 export const Route = createFileRoute("/societies/$slug")({
-  loader: ({ params }) => {
-    const society = societyBySlug(params.slug);
-    if (!society) throw notFound();
-    return { society };
-  },
+  loader: ({ params }) => ({ slug: params.slug }),
   head: ({ loaderData }) => {
-    const s = loaderData?.society;
-    const title = s ? `${s.name} — NSUT Societies` : "Society — NSUT Societies";
-    const description = s ? `${s.tagline} ${s.about}` : "NSUT society recruitment page.";
+    const title = loaderData?.slug ? `${loaderData.slug} — NSUT Societies` : "Society — NSUT Societies";
+    const description = "Explore this NSUT society, learn about its work and apply when recruitment opens.";
     return {
       meta: [
         { title },
@@ -38,24 +33,23 @@ export const Route = createFileRoute("/societies/$slug")({
 });
 
 function SocietyPage() {
-  const { society } = Route.useLoaderData();
+  const { slug } = Route.useLoaderData();
+  const { societies, loading } = useSocieties();
+  const society = societies.find((item) => item.slug === slug);
   const { user, profile } = useAuth();
-  const [hiringOpen, setHiringOpen] = useState(false);
   const [applied, setApplied] = useState(false);
   const [busy, setBusy] = useState(false);
-  const [form, setForm] = useState({ role: society.roles[0], year: "1st", why: "", links: "" });
+  const [form, setForm] = useState<Record<string, string>>({});
+  const configuredFields: FormField[] = society?.formFields?.length ? society.formFields : DEFAULT_FORM_FIELDS;
 
   useEffect(() => {
-    let unsub: (() => void) | undefined;
-    void getFirebase().then(({ db }) => {
-      unsub = onSnapshot(
-        doc(db, "societies", society.slug),
-        (snap) => setHiringOpen(Boolean(snap.data()?.['hiringOpen'])),
-        () => undefined,
-      );
+    if (!society) return;
+    setForm((current) => {
+      const next: Record<string, string> = {};
+      for (const field of configuredFields) next[field.id] = current[field.id] ?? "";
+      return next;
     });
-    return () => unsub?.();
-  }, [society.slug]);
+  }, [society?.slug, society?.formFields]);
 
   useEffect(() => {
     if (!user) return;
@@ -72,7 +66,20 @@ function SocietyPage() {
       );
     });
     return () => unsub?.();
-  }, [user, society.slug]);
+  }, [user, society?.slug]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen">
+        <SiteHeader />
+        <p className="mx-auto max-w-4xl px-4 py-24 text-center text-muted-foreground">Loading society…</p>
+      </div>
+    );
+  }
+
+  if (!society) {
+    throw notFound();
+  }
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -86,7 +93,8 @@ function SocietyPage() {
         email: user.email ?? "",
         society: society.slug,
         societyName: society.name,
-        ...form,
+        role: form.role ?? society.roles[0] ?? "Member",
+        ...Object.fromEntries(configuredFields.map((field) => [field.id, form[field.id] ?? ""])),
         status: "pending",
         createdAt: serverTimestamp(),
       });
@@ -130,13 +138,13 @@ function SocietyPage() {
               hiringOpen ? "bg-accent font-semibold text-accent-foreground" : "glass text-muted-foreground"
             }`}
           >
-            {hiringOpen ? "Recruitment open" : "Recruitment closed"}
+             {society.hiringOpen ? "Recruitment open" : "Recruitment closed"}
           </span>
         </div>
 
         <div className="glass mt-6 rounded-3xl p-8">
           <h2 className="font-display text-2xl font-bold">Hiring form</h2>
-          {!hiringOpen ? (
+           {!society.hiringOpen ? (
             <p className="mt-3 text-sm text-muted-foreground">
               {society.name} isn't hiring right now. The form appears here the moment the society
               head opens recruitment.
@@ -158,7 +166,7 @@ function SocietyPage() {
           ) : (
             <form onSubmit={submit} className="mt-5 space-y-3">
               <select
-                value={form.role}
+                value={form.role ?? society.roles[0] ?? ""}
                 onChange={(e) => setForm({ ...form, role: e.target.value })}
                 className={field}
               >
@@ -168,31 +176,39 @@ function SocietyPage() {
                   </option>
                 ))}
               </select>
-              <select
-                value={form.year}
-                onChange={(e) => setForm({ ...form, year: e.target.value })}
-                className={field}
-              >
-                {["1st", "2nd", "3rd", "4th"].map((y) => (
-                  <option key={y} value={y} className="bg-card">
-                    {y} year
-                  </option>
-                ))}
-              </select>
-              <textarea
-                required
-                rows={4}
-                value={form.why}
-                onChange={(e) => setForm({ ...form, why: e.target.value })}
-                placeholder={`Why do you want to join ${society.name}?`}
-                className={field}
-              />
-              <input
-                value={form.links}
-                onChange={(e) => setForm({ ...form, links: e.target.value })}
-                placeholder="Portfolio / GitHub / Drive link (optional)"
-                className={field}
-              />
+               {configuredFields.map((configuredField) => (
+                 <label key={configuredField.id} className="block space-y-2">
+                   <span className="text-sm font-medium">{configuredField.label}</span>
+                   {configuredField.type === "textarea" ? (
+                     <textarea
+                       required={configuredField.required}
+                       rows={4}
+                       value={form[configuredField.id] ?? ""}
+                       onChange={(e) => setForm({ ...form, [configuredField.id]: e.target.value })}
+                       className={field}
+                     />
+                   ) : configuredField.type === "select" ? (
+                     <select
+                       required={configuredField.required}
+                       value={form[configuredField.id] ?? ""}
+                       onChange={(e) => setForm({ ...form, [configuredField.id]: e.target.value })}
+                       className={field}
+                     >
+                       <option value="" className="bg-card">Select an option</option>
+                       {(configuredField.options ?? []).map((option) => (
+                         <option key={option} value={option} className="bg-card">{option}</option>
+                       ))}
+                     </select>
+                   ) : (
+                     <input
+                       required={configuredField.required}
+                       value={form[configuredField.id] ?? ""}
+                       onChange={(e) => setForm({ ...form, [configuredField.id]: e.target.value })}
+                       className={field}
+                     />
+                   )}
+                 </label>
+               ))}
               <button
                 disabled={busy}
                 className="bg-gradient-hero w-full rounded-2xl px-4 py-3 text-sm font-semibold text-primary-foreground transition-transform hover:scale-[1.02] disabled:opacity-50"

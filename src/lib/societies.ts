@@ -27,6 +27,7 @@ export type Society = {
   accent: string; // css color
   hiringOpen?: boolean;
   removed?: boolean;
+  imageUrl?: string;
   formIntro?: string;
   formFields?: FormField[];
 };

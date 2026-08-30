@@ -1,9 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
-import { collection, onSnapshot } from "firebase/firestore";
+import { useState } from "react";
 import { SiteHeader } from "@/components/SiteHeader";
-import { SOCIETIES } from "@/lib/societies";
-import { getFirebase } from "@/lib/firebase";
+import { useSocieties } from "@/lib/societies";
 
 export const Route = createFileRoute("/societies/")({
   head: () => ({
@@ -25,29 +23,11 @@ export const Route = createFileRoute("/societies/")({
 });
 
 function SocietiesPage() {
-  const [open, setOpen] = useState<Record<string, boolean>>({});
+  const { societies, loading } = useSocieties();
   const [filter, setFilter] = useState("All");
-  const categories = ["All", ...Array.from(new Set(SOCIETIES.map((s) => s.category)))];
+  const categories = ["All", ...Array.from(new Set(societies.map((s) => s.category)))];
 
-  useEffect(() => {
-    let unsub: (() => void) | undefined;
-    void getFirebase().then(({ db }) => {
-      unsub = onSnapshot(
-        collection(db, "societies"),
-        (snap) => {
-          const next: Record<string, boolean> = {};
-          snap.forEach((d) => {
-            next[d.id] = Boolean(d.data()['hiringOpen']);
-          });
-          setOpen(next);
-        },
-        () => undefined,
-      );
-    });
-    return () => unsub?.();
-  }, []);
-
-  const list = SOCIETIES.filter((s) => filter === "All" || s.category === filter);
+  const list = societies.filter((s) => filter === "All" || s.category === filter);
 
   return (
     <div className="min-h-screen">
@@ -76,6 +56,7 @@ function SocietiesPage() {
           ))}
         </div>
 
+        {loading ? <p className="mt-8 text-sm text-muted-foreground">Loading societies…</p> : null}
         <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {list.map((s, i) => (
             <Link
@@ -89,6 +70,14 @@ function SocietiesPage() {
                 className="absolute -top-20 -right-20 h-44 w-44 rounded-full opacity-30 blur-3xl transition-opacity group-hover:opacity-70"
                 style={{ background: s.accent }}
               />
+              {s.imageUrl ? (
+                <img
+                  src={s.imageUrl}
+                  alt={`${s.name} society cover`}
+                  className="mb-5 h-36 w-full rounded-2xl object-cover"
+                  loading="lazy"
+                />
+              ) : null}
               <div className="flex items-start justify-between">
                 <div
                   className="font-display flex h-12 w-12 items-center justify-center rounded-2xl text-sm font-bold"
@@ -98,10 +87,10 @@ function SocietiesPage() {
                 </div>
                 <span
                   className={`rounded-full px-3 py-1 text-xs ${
-                    open[s.slug] ? "bg-accent text-accent-foreground" : "glass text-muted-foreground"
+                    s.hiringOpen ? "bg-accent text-accent-foreground" : "glass text-muted-foreground"
                   }`}
                 >
-                  {open[s.slug] ? "Hiring open" : "Closed"}
+                  {s.hiringOpen ? "Hiring open" : "Closed"}
                 </span>
               </div>
               <h2 className="mt-4 text-xl font-semibold">{s.name}</h2>

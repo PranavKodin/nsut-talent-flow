@@ -167,6 +167,7 @@ const blank = {
   about: "",
   roles: "",
   accent: "oklch(0.72 0.17 300)",
+  imageUrl: "",
 };
 
 function SocietyManager() {
@@ -192,6 +193,7 @@ function SocietyManager() {
         category: form.category,
         tagline: form.tagline,
         about: form.about,
+         imageUrl: form.imageUrl.trim(),
         roles: form.roles
           .split(",")
           .map((r) => r.trim())
@@ -273,6 +275,12 @@ function SocietyManager() {
                 className="glass min-h-20 rounded-xl px-3 py-2 text-sm outline-none sm:col-span-2"
                 placeholder="About"
               />
+               <input
+                 defaultValue={s.imageUrl ?? ""}
+                 onBlur={(e) => void write(s.slug, { imageUrl: e.target.value.trim() })}
+                 className="glass rounded-xl px-3 py-2 text-sm outline-none sm:col-span-2"
+                 placeholder="Society card image URL (admin only)"
+               />
             </div>
           </div>
         ))}
@@ -321,6 +329,12 @@ function SocietyManager() {
           onChange={(e) => setForm({ ...form, about: e.target.value })}
           placeholder="About this society"
           className="glass min-h-20 rounded-xl px-3 py-2 text-sm outline-none sm:col-span-2"
+        />
+        <input
+          value={form.imageUrl}
+          onChange={(e) => setForm({ ...form, imageUrl: e.target.value })}
+          placeholder="Society card image URL (optional)"
+          className="glass rounded-xl px-3 py-2 text-sm outline-none sm:col-span-2"
         />
         <button className="bg-gradient-hero rounded-xl px-4 py-2 text-sm font-semibold text-primary-foreground sm:col-span-2">
           Save society
