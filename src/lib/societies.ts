@@ -2,6 +2,20 @@ import { useEffect, useState } from "react";
 import { collection, onSnapshot } from "firebase/firestore";
 import { getFirebase } from "./firebase";
 
+export type FormField = {
+  id: string;
+  label: string;
+  type: "text" | "textarea" | "select";
+  options?: string[];
+  required?: boolean;
+};
+
+export const DEFAULT_FORM_FIELDS: FormField[] = [
+  { id: "year", label: "Year of study", type: "select", options: ["1st", "2nd", "3rd", "4th"], required: true },
+  { id: "why", label: "Why do you want to join?", type: "textarea", required: true },
+  { id: "links", label: "Portfolio / GitHub / Drive link", type: "text" },
+];
+
 export type Society = {
   slug: string;
   name: string;
@@ -13,6 +27,8 @@ export type Society = {
   accent: string; // css color
   hiringOpen?: boolean;
   removed?: boolean;
+  formIntro?: string;
+  formFields?: FormField[];
 };
 
 export const SOCIETIES: Society[] = [
