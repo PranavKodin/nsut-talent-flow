@@ -28,6 +28,7 @@ export type Society = {
   hiringOpen?: boolean;
   removed?: boolean;
   imageUrl?: string;
+  formImageUrl?: string;
   formIntro?: string;
   formFields?: FormField[];
 };

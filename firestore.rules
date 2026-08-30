@@ -57,13 +57,15 @@ service cloud.firestore {
       allow create: if isAdmin()
         || (isHeadOf(slug)
             && request.resource.data.keys().hasOnly([
-              'name', 'tagline', 'about', 'roles', 'formIntro', 'formFields', 'hiringOpen'
+              'name', 'tagline', 'about', 'roles', 'formIntro', 'formFields',
+              'hiringOpen', 'imageUrl', 'formImageUrl'
             ]));
       // A head may edit only their own society's page + hiring form fields.
       allow update: if isAdmin()
         || (isHeadOf(slug)
             && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
-              'tagline', 'about', 'roles', 'formIntro', 'formFields', 'hiringOpen'
+              'tagline', 'about', 'roles', 'formIntro', 'formFields',
+              'hiringOpen', 'imageUrl', 'formImageUrl'
             ]));
     }
 

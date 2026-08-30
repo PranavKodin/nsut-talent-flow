@@ -168,6 +168,7 @@ const blank = {
   roles: "",
   accent: "oklch(0.72 0.17 300)",
   imageUrl: "",
+  formImageUrl: "",
 };
 
 function SocietyManager() {
@@ -194,6 +195,7 @@ function SocietyManager() {
         tagline: form.tagline,
         about: form.about,
          imageUrl: form.imageUrl.trim(),
+         formImageUrl: form.formImageUrl.trim(),
         roles: form.roles
           .split(",")
           .map((r) => r.trim())
@@ -279,7 +281,13 @@ function SocietyManager() {
                  defaultValue={s.imageUrl ?? ""}
                  onBlur={(e) => void write(s.slug, { imageUrl: e.target.value.trim() })}
                  className="glass rounded-xl px-3 py-2 text-sm outline-none sm:col-span-2"
-                 placeholder="Society card image URL (admin only)"
+                 placeholder="Society card image URL"
+               />
+               <input
+                 defaultValue={s.formImageUrl ?? ""}
+                 onBlur={(e) => void write(s.slug, { formImageUrl: e.target.value.trim() })}
+                 className="glass rounded-xl px-3 py-2 text-sm outline-none sm:col-span-2"
+                 placeholder="Hiring form banner image URL"
                />
             </div>
           </div>
@@ -334,6 +342,12 @@ function SocietyManager() {
           value={form.imageUrl}
           onChange={(e) => setForm({ ...form, imageUrl: e.target.value })}
           placeholder="Society card image URL (optional)"
+          className="glass rounded-xl px-3 py-2 text-sm outline-none sm:col-span-2"
+        />
+        <input
+          value={form.formImageUrl}
+          onChange={(e) => setForm({ ...form, formImageUrl: e.target.value })}
+          placeholder="Hiring form banner image URL (optional)"
           className="glass rounded-xl px-3 py-2 text-sm outline-none sm:col-span-2"
         />
         <button className="bg-gradient-hero rounded-xl px-4 py-2 text-sm font-semibold text-primary-foreground sm:col-span-2">
