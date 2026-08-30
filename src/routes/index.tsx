@@ -7,6 +7,7 @@ import { useSiteStats } from "@/lib/admin";
 import hero1 from "@/assets/hero-1.jpg";
 import hero2 from "@/assets/hero-2.jpg";
 import hero3 from "@/assets/hero-3.jpg";
+import hero4 from "@/assets/hero-4.jpg";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -141,6 +142,16 @@ function Index() {
                 height={1000}
                 loading="lazy"
                 className="h-44 w-full rounded-2xl object-cover md:h-52"
+              />
+            </div>
+            <div className="glass-strong absolute right-16 -bottom-6 hidden w-40 -rotate-[5deg] overflow-hidden rounded-3xl p-2 transition-transform duration-500 hover:rotate-0 md:block md:w-48">
+              <img
+                src={hero4}
+                alt="Tech society members coding together at a night hackathon"
+                width={800}
+                height={1008}
+                loading="lazy"
+                className="h-40 w-full rounded-2xl object-cover md:h-48"
               />
             </div>
           </div>
