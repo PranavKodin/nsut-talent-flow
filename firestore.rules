@@ -1,0 +1,80 @@
+rules_version = '2';
+
+// NSUT Societies platform — access rules
+//
+// admin  : sunny.pranav2006@gmail.com (always), plus anyone the admin marks
+//          with role == "admin" in their users/{uid} document.
+// head   : a user the admin assigned role == "head" and a society slug.
+//          A head can edit ONLY their own society document, which includes the
+//          hiring form (hiringOpen, formIntro, formFields) shown on the website.
+// member : everyone else — can read public data and manage their own profile
+//          and their own applications.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function userDoc() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    function isAdmin() {
+      return signedIn() && (
+        request.auth.token.email.lower() == 'sunny.pranav2006@gmail.com' ||
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+         userDoc().role == 'admin')
+      );
+    }
+
+    function isHeadOf(slug) {
+      return signedIn()
+        && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        && userDoc().role == 'head'
+        && userDoc().society == slug;
+    }
+
+    // ---- users ------------------------------------------------------------
+    match /users/{uid} {
+      allow read: if signedIn();
+      // A user creates their own profile. role/society are admin-controlled:
+      // self-writes must keep them unchanged (new accounts start as members).
+      allow create: if signedIn() && request.auth.uid == uid
+        && (request.resource.data.role == 'member'
+            || request.auth.token.email.lower() == 'sunny.pranav2006@gmail.com');
+      allow update: if isAdmin()
+        || (signedIn() && request.auth.uid == uid
+            && request.resource.data.role == resource.data.role
+            && request.resource.data.society == resource.data.society);
+      allow delete: if isAdmin();
+    }
+
+    // ---- societies (incl. the hiring form definition) ----------------------
+    match /societies/{slug} {
+      allow read: if true;                        // public website data
+      allow create, delete: if isAdmin();         // only admin adds/removes societies
+      allow update: if isAdmin() || isHeadOf(slug); // heads edit their own form
+    }
+
+    // ---- applications ------------------------------------------------------
+    match /applications/{appId} {
+      allow create: if signedIn() && request.resource.data.uid == request.auth.uid;
+      allow read: if isAdmin()
+        || (signedIn() && resource.data.uid == request.auth.uid)
+        || isHeadOf(resource.data.society);
+      allow update: if isAdmin() || isHeadOf(resource.data.society);
+      allow delete: if isAdmin();
+    }
+
+    // ---- landing page settings ---------------------------------------------
+    match /settings/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
