@@ -92,7 +92,7 @@ function SocietiesPage() {
               <div className="flex items-start justify-between">
                 <div
                   className="font-display flex h-12 w-12 items-center justify-center rounded-2xl text-sm font-bold"
-                  style={{ background: s.accent, color: "oklch(0.16 0.035 275)" }}
+                  style={{ background: s.accent, color: "oklch(0.14 0.045 300)" }}
                 >
                   {s.short}
                 </div>

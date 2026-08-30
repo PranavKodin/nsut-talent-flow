@@ -25,7 +25,7 @@ export const SOCIETIES: Society[] = [
     about:
       "The developer community of NSUT — shipping products, hosting hackathons and mentoring first-time builders.",
     roles: ["Frontend Developer", "Backend Developer", "Design", "Content"],
-    accent: "oklch(0.72 0.17 190)",
+    accent: "oklch(0.62 0.2 300)",
   },
   {
     slug: "iecse",
@@ -36,7 +36,7 @@ export const SOCIETIES: Society[] = [
     about:
       "Research talks, robotics builds and industry workshops driven by students who like hard problems.",
     roles: ["Technical", "Research", "Sponsorship", "Operations"],
-    accent: "oklch(0.7 0.19 265)",
+    accent: "oklch(0.7 0.19 300)",
   },
   {
     slug: "axiom",
@@ -46,7 +46,7 @@ export const SOCIETIES: Society[] = [
     tagline: "The dramatics society.",
     about: "Street plays, stage productions and a green room that never sleeps before fest week.",
     roles: ["Actor", "Script", "Backstage", "Marketing"],
-    accent: "oklch(0.75 0.18 25)",
+    accent: "oklch(0.78 0.16 305)",
   },
   {
     slug: "junoon",
@@ -56,7 +56,7 @@ export const SOCIETIES: Society[] = [
     tagline: "Dance like the whole campus is watching.",
     about: "Western, classical and hip-hop crews competing across the Delhi circuit.",
     roles: ["Dancer", "Choreography", "Production", "Social Media"],
-    accent: "oklch(0.75 0.2 330)",
+    accent: "oklch(0.55 0.2 300)",
   },
   {
     slug: "enactus",
@@ -66,7 +66,7 @@ export const SOCIETIES: Society[] = [
     tagline: "Social impact, business first.",
     about: "Running self-sustaining social projects with real revenue and real beneficiaries.",
     roles: ["Project Lead", "Finance", "Outreach", "Design"],
-    accent: "oklch(0.8 0.16 145)",
+    accent: "oklch(0.85 0.12 300)",
   },
   {
     slug: "moksha",
@@ -76,7 +76,7 @@ export const SOCIETIES: Society[] = [
     tagline: "Every frame of campus life.",
     about: "Photography, films and the visual identity of NSUT's biggest fests.",
     roles: ["Photographer", "Video Editor", "Graphic Design", "Writer"],
-    accent: "oklch(0.82 0.15 85)",
+    accent: "oklch(0.48 0.18 300)",
   },
 ];
 

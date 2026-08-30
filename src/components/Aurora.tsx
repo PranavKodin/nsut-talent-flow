@@ -25,7 +25,7 @@ export function Aurora() {
       <div
         className="blob h-[32rem] w-[32rem]"
         style={{
-          background: "oklch(0.7 0.16 195)",
+          background: "oklch(0.58 0.2 300)",
           right: `${10 - pos.x * 12}%`,
           top: "22%",
           animationDelay: "-6s",
@@ -35,7 +35,7 @@ export function Aurora() {
       <div
         className="blob h-[30rem] w-[30rem]"
         style={{
-          background: "oklch(0.72 0.16 90)",
+          background: "oklch(0.8 0.14 305)",
           left: "28%",
           bottom: `${-10 + pos.y * 8}%`,
           animationDelay: "-11s",

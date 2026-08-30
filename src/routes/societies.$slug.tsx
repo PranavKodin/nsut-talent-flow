@@ -111,7 +111,7 @@ function SocietyPage() {
           />
           <div
             className="font-display flex h-16 w-16 items-center justify-center rounded-3xl text-xl font-bold"
-            style={{ background: society.accent, color: "oklch(0.16 0.035 275)" }}
+            style={{ background: society.accent, color: "oklch(0.14 0.045 300)" }}
           >
             {society.short}
           </div>

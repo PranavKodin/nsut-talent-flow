@@ -1,8 +1,10 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useAuth } from "@/lib/auth-context";
+import { useIsAdmin } from "@/lib/admin";
 
 export function SiteHeader() {
   const { user, profile, logout } = useAuth();
+  const { isAdmin } = useIsAdmin();
   const navigate = useNavigate();
 
   return (
@@ -20,12 +22,17 @@ export function SiteHeader() {
               Dashboard
             </Link>
           ) : null}
+          {isAdmin ? (
+            <Link to="/admin" className="text-primary transition-colors hover:text-foreground">
+              Admin panel
+            </Link>
+          ) : null}
         </nav>
         <div className="flex items-center gap-2">
           {user ? (
             <>
               <span className="hidden text-xs text-muted-foreground sm:block">
-                {profile?.name || user.email} · {profile?.role ?? "member"}
+                {profile?.name || user.email} · {isAdmin ? "admin" : (profile?.role ?? "member")}
               </span>
               <button
                 onClick={async () => {
