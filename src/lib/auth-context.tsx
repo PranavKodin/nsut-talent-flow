@@ -26,7 +26,7 @@ import { getFirebase } from "./firebase";
 export type Role = "member" | "head" | "admin";
 
 /** Emails that always get the admin role on first sign-in. */
-export const ADMIN_EMAILS: string[] = [];
+export const ADMIN_EMAILS: string[] = ["sunny.pranav2006@gmail.com"];
 
 export type Profile = {
   uid: string;
@@ -76,7 +76,14 @@ async function ensureProfile(user: User): Promise<void> {
   const { db } = await getFirebase();
   const ref = doc(db, "users", user.uid);
   const snap = await getDoc(ref);
-  if (snap.exists()) return;
+  const isAdminEmail = ADMIN_EMAILS.includes((user.email ?? "").toLowerCase());
+  if (snap.exists()) {
+    // Keep the owner account on the admin role no matter what.
+    if (isAdminEmail && snap.data()?.['role'] !== "admin") {
+      await updateDoc(ref, { role: "admin" });
+    }
+    return;
+  }
 
   // Bootstrap: the very first account on the platform becomes the admin.
   let role: Role = "member";
@@ -86,7 +93,7 @@ async function ensureProfile(user: User): Promise<void> {
   } catch {
     /* rules may block the probe — stay a member */
   }
-  if (ADMIN_EMAILS.includes((user.email ?? "").toLowerCase())) role = "admin";
+  if (isAdminEmail) role = "admin";
 
   await setDoc(ref, {
     uid: user.uid,
