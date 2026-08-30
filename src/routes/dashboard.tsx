@@ -276,6 +276,9 @@ function SocietyEditor({ society }: { society: NonNullable<ReturnType<typeof use
     tagline: society.tagline,
     about: society.about,
     formIntro: society.formIntro ?? "Tell us what you would bring to the team.",
+    imageUrl: society.imageUrl ?? "",
+    formImageUrl: society.formImageUrl ?? "",
+    logoUrl: society.logoUrl ?? "",
   });
   const [fields, setFields] = useState<FormField[]>(society.formFields?.length ? society.formFields : DEFAULT_FORM_FIELDS);
 
@@ -284,9 +287,12 @@ function SocietyEditor({ society }: { society: NonNullable<ReturnType<typeof use
       tagline: society.tagline,
       about: society.about,
       formIntro: society.formIntro ?? "Tell us what you would bring to the team.",
+      imageUrl: society.imageUrl ?? "",
+      formImageUrl: society.formImageUrl ?? "",
+      logoUrl: society.logoUrl ?? "",
     });
     setFields(society.formFields?.length ? society.formFields : DEFAULT_FORM_FIELDS);
-  }, [society.slug, society.tagline, society.about, society.formIntro, society.formFields]);
+  }, [society.slug, society.tagline, society.about, society.formIntro, society.formFields, society.imageUrl, society.formImageUrl, society.logoUrl]);
 
   const save = async () => {
     try {

@@ -158,7 +158,18 @@ function SocietyPage() {
         </div>
 
         <div className="glass mt-6 rounded-3xl p-8">
+          {society.formImageUrl ? (
+            <img
+              src={society.formImageUrl}
+              alt={`${society.name} hiring banner`}
+              className="mb-5 h-44 w-full rounded-2xl object-cover"
+              loading="lazy"
+            />
+          ) : null}
           <h2 className="font-display text-2xl font-bold">Hiring form</h2>
+          {society.formIntro ? (
+            <p className="mt-2 text-sm text-muted-foreground">{society.formIntro}</p>
+          ) : null}
            {!society.hiringOpen ? (
             <p className="mt-3 text-sm text-muted-foreground">
               {society.name} isn't hiring right now. The form appears here the moment the society
