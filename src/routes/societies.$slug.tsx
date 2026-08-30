@@ -52,7 +52,7 @@ function SocietyPage() {
   }, [society?.slug, society?.formFields]);
 
   useEffect(() => {
-    if (!user) return;
+    if (!user || !society) return;
     let unsub: (() => void) | undefined;
     void getFirebase().then(({ db }) => {
       unsub = onSnapshot(
@@ -93,7 +93,7 @@ function SocietyPage() {
         email: user.email ?? "",
         society: society.slug,
         societyName: society.name,
-        role: form.role ?? society.roles[0] ?? "Member",
+        role: form['role'] ?? society.roles[0] ?? "Member",
         ...Object.fromEntries(configuredFields.map((field) => [field.id, form[field.id] ?? ""])),
         status: "pending",
         createdAt: serverTimestamp(),
@@ -135,7 +135,7 @@ function SocietyPage() {
           </div>
           <span
             className={`mt-6 inline-block rounded-full px-4 py-1.5 text-sm ${
-              hiringOpen ? "bg-accent font-semibold text-accent-foreground" : "glass text-muted-foreground"
+              society.hiringOpen ? "bg-accent font-semibold text-accent-foreground" : "glass text-muted-foreground"
             }`}
           >
              {society.hiringOpen ? "Recruitment open" : "Recruitment closed"}
@@ -166,8 +166,8 @@ function SocietyPage() {
           ) : (
             <form onSubmit={submit} className="mt-5 space-y-3">
               <select
-                value={form.role ?? society.roles[0] ?? ""}
-                onChange={(e) => setForm({ ...form, role: e.target.value })}
+                value={form['role'] ?? society.roles[0] ?? ""}
+                onChange={(e) => setForm({ ...form, ['role']: e.target.value })}
                 className={field}
               >
                 {society.roles.map((r) => (
