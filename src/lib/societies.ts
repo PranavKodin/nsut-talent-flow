@@ -29,6 +29,7 @@ export type Society = {
   removed?: boolean;
   imageUrl?: string;
   formImageUrl?: string;
+  logoUrl?: string;
   formIntro?: string;
   formFields?: FormField[];
 };
