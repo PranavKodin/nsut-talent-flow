@@ -79,12 +79,21 @@ function SocietiesPage() {
                 />
               ) : null}
               <div className="flex items-start justify-between">
-                <div
-                  className="font-display flex h-12 w-12 items-center justify-center rounded-2xl text-sm font-bold"
-                  style={{ background: s.accent, color: "oklch(0.14 0.045 300)" }}
-                >
-                  {s.short}
-                </div>
+                {s.logoUrl ? (
+                  <img
+                    src={s.logoUrl}
+                    alt={`${s.name} logo`}
+                    className="h-12 w-12 rounded-2xl object-cover"
+                    loading="lazy"
+                  />
+                ) : (
+                  <div
+                    className="font-display flex h-12 w-12 items-center justify-center rounded-2xl text-sm font-bold"
+                    style={{ background: s.accent, color: "oklch(0.14 0.045 300)" }}
+                  >
+                    {s.short}
+                  </div>
+                )}
                 <span
                   className={`rounded-full px-3 py-1 text-xs ${
                     s.hiringOpen ? "bg-accent text-accent-foreground" : "glass text-muted-foreground"
