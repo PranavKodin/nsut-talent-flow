@@ -49,8 +49,17 @@ service cloud.firestore {
 
     // ---- societies (incl. the hiring form definition) ----------------------
     match /societies/{slug} {
-      allow read: if true;                        // public website data
-      allow create, delete: if isAdmin();         // only admin adds/removes societies
+      allow read: if true;                // public website data
+      allow delete: if isAdmin();         // only admin removes societies
+      // Admin creates any society. A head may create their own society doc the
+      // first time they publish, but only with page/form fields — never admin-
+      // controlled fields like imageUrl or featured.
+      allow create: if isAdmin()
+        || (isHeadOf(slug)
+            && request.resource.data.keys().hasOnly([
+              'name', 'tagline', 'about', 'roles', 'formIntro', 'formFields', 'hiringOpen'
+            ]));
+      // A head may edit only their own society's page + hiring form fields.
       allow update: if isAdmin()
         || (isHeadOf(slug)
             && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
