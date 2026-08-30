@@ -181,7 +181,10 @@ function SocietyManager() {
   const create = async (e: React.FormEvent) => {
     e.preventDefault();
     const slug = form.slug.trim().toLowerCase().replace(/\s+/g, "-");
-    if (!slug || !form.name.trim()) return toast.error("Slug and name are required");
+    if (!slug || !form.name.trim()) {
+      toast.error("Slug and name are required");
+      return;
+    }
     try {
       await write(slug, {
         name: form.name.trim(),
