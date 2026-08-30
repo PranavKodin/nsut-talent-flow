@@ -117,12 +117,27 @@ function SocietyPage() {
             className="absolute -top-24 -right-10 h-64 w-64 rounded-full opacity-40 blur-3xl"
             style={{ background: society.accent }}
           />
-          <div
-            className="font-display flex h-16 w-16 items-center justify-center rounded-3xl text-xl font-bold"
-            style={{ background: society.accent, color: "oklch(0.14 0.045 300)" }}
-          >
-            {society.short}
-          </div>
+          {society.imageUrl ? (
+            <img
+              src={society.imageUrl}
+              alt={`${society.name} cover`}
+              className="mb-6 h-48 w-full rounded-2xl object-cover"
+            />
+          ) : null}
+          {society.logoUrl ? (
+            <img
+              src={society.logoUrl}
+              alt={`${society.name} logo`}
+              className="h-16 w-16 rounded-3xl object-cover"
+            />
+          ) : (
+            <div
+              className="font-display flex h-16 w-16 items-center justify-center rounded-3xl text-xl font-bold"
+              style={{ background: society.accent, color: "oklch(0.14 0.045 300)" }}
+            >
+              {society.short}
+            </div>
+          )}
           <h1 className="font-display mt-5 text-4xl font-bold">{society.name}</h1>
           <p className="mt-2 text-lg text-muted-foreground">{society.tagline}</p>
           <p className="mt-4 max-w-2xl text-sm text-muted-foreground">{society.about}</p>
@@ -143,7 +158,18 @@ function SocietyPage() {
         </div>
 
         <div className="glass mt-6 rounded-3xl p-8">
+          {society.formImageUrl ? (
+            <img
+              src={society.formImageUrl}
+              alt={`${society.name} hiring banner`}
+              className="mb-5 h-44 w-full rounded-2xl object-cover"
+              loading="lazy"
+            />
+          ) : null}
           <h2 className="font-display text-2xl font-bold">Hiring form</h2>
+          {society.formIntro ? (
+            <p className="mt-2 text-sm text-muted-foreground">{society.formIntro}</p>
+          ) : null}
            {!society.hiringOpen ? (
             <p className="mt-3 text-sm text-muted-foreground">
               {society.name} isn't hiring right now. The form appears here the moment the society

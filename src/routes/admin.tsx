@@ -169,6 +169,7 @@ const blank = {
   accent: "oklch(0.72 0.17 300)",
   imageUrl: "",
   formImageUrl: "",
+  logoUrl: "",
 };
 
 function SocietyManager() {
@@ -196,6 +197,7 @@ function SocietyManager() {
         about: form.about,
          imageUrl: form.imageUrl.trim(),
          formImageUrl: form.formImageUrl.trim(),
+         logoUrl: form.logoUrl.trim(),
         roles: form.roles
           .split(",")
           .map((r) => r.trim())
@@ -289,6 +291,19 @@ function SocietyManager() {
                  className="glass rounded-xl px-3 py-2 text-sm outline-none sm:col-span-2"
                  placeholder="Hiring form banner image URL"
                />
+               <input
+                 defaultValue={s.logoUrl ?? ""}
+                 onBlur={(e) => void write(s.slug, { logoUrl: e.target.value.trim() })}
+                 className="glass rounded-xl px-3 py-2 text-sm outline-none sm:col-span-2"
+                 placeholder="Society logo image URL"
+               />
+               {(s.logoUrl || s.imageUrl || s.formImageUrl) ? (
+                 <div className="flex flex-wrap gap-3 sm:col-span-2">
+                   {s.logoUrl ? <img src={s.logoUrl} alt={`${s.name} logo preview`} className="h-14 w-14 rounded-2xl object-cover" /> : null}
+                   {s.imageUrl ? <img src={s.imageUrl} alt={`${s.name} card preview`} className="h-14 w-24 rounded-xl object-cover" /> : null}
+                   {s.formImageUrl ? <img src={s.formImageUrl} alt={`${s.name} form banner preview`} className="h-14 w-24 rounded-xl object-cover" /> : null}
+                 </div>
+               ) : null}
             </div>
           </div>
         ))}
@@ -348,6 +363,12 @@ function SocietyManager() {
           value={form.formImageUrl}
           onChange={(e) => setForm({ ...form, formImageUrl: e.target.value })}
           placeholder="Hiring form banner image URL (optional)"
+          className="glass rounded-xl px-3 py-2 text-sm outline-none sm:col-span-2"
+        />
+        <input
+          value={form.logoUrl}
+          onChange={(e) => setForm({ ...form, logoUrl: e.target.value })}
+          placeholder="Society logo image URL (optional)"
           className="glass rounded-xl px-3 py-2 text-sm outline-none sm:col-span-2"
         />
         <button className="bg-gradient-hero rounded-xl px-4 py-2 text-sm font-semibold text-primary-foreground sm:col-span-2">

@@ -276,6 +276,9 @@ function SocietyEditor({ society }: { society: NonNullable<ReturnType<typeof use
     tagline: society.tagline,
     about: society.about,
     formIntro: society.formIntro ?? "Tell us what you would bring to the team.",
+    imageUrl: society.imageUrl ?? "",
+    formImageUrl: society.formImageUrl ?? "",
+    logoUrl: society.logoUrl ?? "",
   });
   const [fields, setFields] = useState<FormField[]>(society.formFields?.length ? society.formFields : DEFAULT_FORM_FIELDS);
 
@@ -284,14 +287,17 @@ function SocietyEditor({ society }: { society: NonNullable<ReturnType<typeof use
       tagline: society.tagline,
       about: society.about,
       formIntro: society.formIntro ?? "Tell us what you would bring to the team.",
+      imageUrl: society.imageUrl ?? "",
+      formImageUrl: society.formImageUrl ?? "",
+      logoUrl: society.logoUrl ?? "",
     });
     setFields(society.formFields?.length ? society.formFields : DEFAULT_FORM_FIELDS);
-  }, [society.slug, society.tagline, society.about, society.formIntro, society.formFields]);
+  }, [society.slug, society.tagline, society.about, society.formIntro, society.formFields, society.imageUrl, society.formImageUrl, society.logoUrl]);
 
   const save = async () => {
     try {
       const { db } = await getFirebase();
-      await updateDoc(doc(db, "societies", society.slug), { ...draft, formFields: fields });
+      await setDoc(doc(db, "societies", society.slug), { ...draft, formFields: fields }, { merge: true });
       toast.success("Society page and form published");
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Could not save changes");
@@ -322,6 +328,16 @@ function SocietyEditor({ society }: { society: NonNullable<ReturnType<typeof use
         <input value={draft.tagline} onChange={(e) => setDraft({ ...draft, tagline: e.target.value })} className="glass rounded-xl px-3 py-2 text-sm outline-none" placeholder="Society tagline" />
         <textarea value={draft.about} onChange={(e) => setDraft({ ...draft, about: e.target.value })} className="glass min-h-24 rounded-xl px-3 py-2 text-sm outline-none" placeholder="About your society" />
         <textarea value={draft.formIntro} onChange={(e) => setDraft({ ...draft, formIntro: e.target.value })} className="glass min-h-20 rounded-xl px-3 py-2 text-sm outline-none" placeholder="Form introduction" />
+        <input value={draft.logoUrl} onChange={(e) => setDraft({ ...draft, logoUrl: e.target.value })} className="glass rounded-xl px-3 py-2 text-sm outline-none" placeholder="Society logo image URL" />
+        <input value={draft.imageUrl} onChange={(e) => setDraft({ ...draft, imageUrl: e.target.value })} className="glass rounded-xl px-3 py-2 text-sm outline-none" placeholder="Society card image URL" />
+        <input value={draft.formImageUrl} onChange={(e) => setDraft({ ...draft, formImageUrl: e.target.value })} className="glass rounded-xl px-3 py-2 text-sm outline-none" placeholder="Hiring form banner image URL" />
+        {(draft.logoUrl || draft.imageUrl || draft.formImageUrl) ? (
+          <div className="flex flex-wrap gap-3">
+            {draft.logoUrl ? <img src={draft.logoUrl} alt="Logo preview" className="h-14 w-14 rounded-2xl object-cover" /> : null}
+            {draft.imageUrl ? <img src={draft.imageUrl} alt="Card image preview" className="h-14 w-24 rounded-xl object-cover" /> : null}
+            {draft.formImageUrl ? <img src={draft.formImageUrl} alt="Form banner preview" className="h-14 w-24 rounded-xl object-cover" /> : null}
+          </div>
+        ) : null}
       </div>
       <div className="mt-5 border-t border-border/50 pt-5">
         <div className="flex items-center justify-between gap-3">
